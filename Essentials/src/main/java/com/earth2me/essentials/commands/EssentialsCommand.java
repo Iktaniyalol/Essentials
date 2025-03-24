@@ -168,8 +168,18 @@ public abstract class EssentialsCommand implements IEssentialsCommand {
     public final void run(final Server server, final User user, final String commandLabel, final Command cmd, final String[] args) throws Exception {
         final Trade charge = new Trade(this.getName(), ess);
         charge.isAffordableFor(user);
-        run(server, user, commandLabel, args);
-        charge.charge(user);
+        boolean cooldownFound = false;
+        if (ess.getSettings().isCommandCooldownsEnabled()
+                && !user.isAuthorized("essentials.commandcooldowns.bypass")
+                && !user.isAuthorized("essentials.commandcooldowns.bypass." + this.getName())) {
+            final String fullCommand = this.getName();
+
+            cooldownFound = user.checkCooldownForCommand(fullCommand);
+        }
+        if (!cooldownFound) {
+            run(server, user, commandLabel, args);
+            charge.charge(user);
+        }
     }
 
     protected void run(final Server server, final User user, final String commandLabel, final String[] args) throws Exception {

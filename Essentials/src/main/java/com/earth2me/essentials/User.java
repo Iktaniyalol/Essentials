@@ -50,9 +50,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;
+import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 import static com.earth2me.essentials.I18n.tlLiteral;
 import static com.earth2me.essentials.I18n.tlLocale;
@@ -1286,5 +1288,37 @@ public class User extends UserData implements Comparable<User>, IMessageRecipien
 
     public void setFlightTick(int flightTick) {
         this.flightTick = flightTick;
+    }
+
+    public boolean checkCooldownForCommand(String fullCommand) {
+        // Used to determine whether a user already has an existing cooldown
+        // If so, no need to check for (and write) new ones.
+        boolean cooldownFound = false;
+
+        for (final Map.Entry<Pattern, Long> entry : this.getCommandCooldowns().entrySet()) {
+            // Remove any expired cooldowns
+            if (entry.getValue() <= System.currentTimeMillis()) {
+                this.clearCommandCooldown(entry.getKey());
+                // Don't break in case there are other command cooldowns left to clear.
+            } else if (entry.getKey().matcher(fullCommand).matches()) {
+                // User's current cooldown hasn't expired, inform and terminate cooldown code.
+                final String commandCooldownTime = DateUtil.formatDateDiff(entry.getValue());
+                this.sendTl("commandCooldown", commandCooldownTime);
+                cooldownFound = true;
+            }
+        }
+
+        if (!cooldownFound) {
+            final Map.Entry<Pattern, Long> cooldownEntry = ess.getSettings().getCommandCooldownEntry(fullCommand);
+
+            if (cooldownEntry != null) {
+                if (ess.getSettings().isDebug()) {
+                    ess.getLogger().info("Applying " + cooldownEntry.getValue() + "ms cooldown on /" + fullCommand + " for" + this.getName() + ".");
+                }
+                final Date expiry = new Date(System.currentTimeMillis() + cooldownEntry.getValue());
+                this.addCommandCooldown(cooldownEntry.getKey(), expiry, ess.getSettings().isCommandCooldownPersistent(fullCommand));
+            }
+        }
+        return cooldownFound;
     }
 }

@@ -73,13 +73,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.logging.Level;
-import java.util.regex.Pattern;
 
 import static com.earth2me.essentials.I18n.tlLiteral;
 
@@ -719,35 +717,8 @@ public class EssentialsPlayerListener implements Listener, FakeAccessor {
                 : " " + effectiveCommand.substring(argStartIndex); // arguments start at argStartIndex; substring from there.
             final String fullCommand = pluginCommand == null ? effectiveCommand : pluginCommand.getName() + args;
 
-            // Used to determine whether a user already has an existing cooldown
-            // If so, no need to check for (and write) new ones.
-            boolean cooldownFound = false;
-
-            for (final Entry<Pattern, Long> entry : user.getCommandCooldowns().entrySet()) {
-                // Remove any expired cooldowns
-                if (entry.getValue() <= System.currentTimeMillis()) {
-                    user.clearCommandCooldown(entry.getKey());
-                    // Don't break in case there are other command cooldowns left to clear.
-                } else if (entry.getKey().matcher(fullCommand).matches()) {
-                    // User's current cooldown hasn't expired, inform and terminate cooldown code.
-                    final String commandCooldownTime = DateUtil.formatDateDiff(entry.getValue());
-                    user.sendTl("commandCooldown", commandCooldownTime);
-                    cooldownFound = true;
-                    event.setCancelled(true);
-                }
-            }
-
-            if (!cooldownFound) {
-                final Entry<Pattern, Long> cooldownEntry = ess.getSettings().getCommandCooldownEntry(fullCommand);
-
-                if (cooldownEntry != null) {
-                    if (ess.getSettings().isDebug()) {
-                        ess.getLogger().info("Applying " + cooldownEntry.getValue() + "ms cooldown on /" + fullCommand + " for" + user.getName() + ".");
-                    }
-                    final Date expiry = new Date(System.currentTimeMillis() + cooldownEntry.getValue());
-                    user.addCommandCooldown(cooldownEntry.getKey(), expiry, ess.getSettings().isCommandCooldownPersistent(fullCommand));
-                }
-            }
+            final boolean cooldownFound = user.checkCooldownForCommand(fullCommand);
+            if (cooldownFound) event.setCancelled(true);
         }
     }
 

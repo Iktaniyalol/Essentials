@@ -1290,35 +1290,29 @@ public class User extends UserData implements Comparable<User>, IMessageRecipien
         this.flightTick = flightTick;
     }
 
-    public boolean checkCooldownForCommand(String fullCommand) {
-        // Used to determine whether a user already has an existing cooldown
-        // If so, no need to check for (and write) new ones.
-        boolean cooldownFound = false;
-
+    public Long getCooldownForCommand(String fullCommand) {
         for (final Map.Entry<Pattern, Long> entry : this.getCommandCooldowns().entrySet()) {
             // Remove any expired cooldowns
             if (entry.getValue() <= System.currentTimeMillis()) {
                 this.clearCommandCooldown(entry.getKey());
                 // Don't break in case there are other command cooldowns left to clear.
             } else if (entry.getKey().matcher(fullCommand).matches()) {
-                // User's current cooldown hasn't expired, inform and terminate cooldown code.
-                final String commandCooldownTime = DateUtil.formatDateDiff(entry.getValue());
-                this.sendTl("commandCooldown", commandCooldownTime);
-                cooldownFound = true;
+                // User's current cooldown hasn't expired
+                return entry.getValue();
             }
         }
+        return null;
+    }
 
-        if (!cooldownFound) {
-            final Map.Entry<Pattern, Long> cooldownEntry = ess.getSettings().getCommandCooldownEntry(fullCommand);
+    public void setCooldownForCommand(String fullCommand) {
+        final Map.Entry<Pattern, Long> cooldownEntry = ess.getSettings().getCommandCooldownEntry(fullCommand);
 
-            if (cooldownEntry != null) {
-                if (ess.getSettings().isDebug()) {
-                    ess.getLogger().info("Applying " + cooldownEntry.getValue() + "ms cooldown on /" + fullCommand + " for" + this.getName() + ".");
-                }
-                final Date expiry = new Date(System.currentTimeMillis() + cooldownEntry.getValue());
-                this.addCommandCooldown(cooldownEntry.getKey(), expiry, ess.getSettings().isCommandCooldownPersistent(fullCommand));
+        if (cooldownEntry != null) {
+            if (ess.getSettings().isDebug()) {
+                ess.getLogger().info("Applying " + cooldownEntry.getValue() + "ms cooldown on /" + fullCommand + " for " + this.getName() + ".");
             }
+            final Date expiry = new Date(System.currentTimeMillis() + cooldownEntry.getValue());
+            this.addCommandCooldown(cooldownEntry.getKey(), expiry, ess.getSettings().isCommandCooldownPersistent(fullCommand));
         }
-        return cooldownFound;
     }
 }

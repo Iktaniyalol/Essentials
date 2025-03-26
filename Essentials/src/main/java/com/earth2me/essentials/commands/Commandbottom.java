@@ -30,6 +30,6 @@ public class Commandbottom extends EssentialsCommand {
                 user.sendTl("teleportBottom", safe.getWorld().getName(), safe.getBlockX(), safe.getBlockY(), safe.getBlockZ());
             }
         });
-        user.getAsyncTeleport().teleport(safe, new Trade(this.getName(), ess), PlayerTeleportEvent.TeleportCause.COMMAND, future);
+        user.getAsyncTeleport().teleport(safe, new Trade(this.getName(), getFullCommand(args), ess), PlayerTeleportEvent.TeleportCause.COMMAND, future);
     }
 }

@@ -103,7 +103,7 @@ public class Commandtpaccept extends EssentialsCommand {
             return;
         }
 
-        final Trade charge = new Trade(this.getName(), ess);
+        final Trade charge = new Trade(this.getName(), getFullCommand(new String[]{requester.getName()}), ess);
         requester.sendTl("requestAcceptedFrom", user.getDisplayName());
 
         final CompletableFuture<Boolean> future = getNewExceptionFuture(requester.getSource(), commandLabel);

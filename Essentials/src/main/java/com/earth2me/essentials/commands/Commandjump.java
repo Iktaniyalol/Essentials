@@ -43,7 +43,7 @@ public class Commandjump extends EssentialsCommand {
             throw new TranslatableException(ex, "jumpError");
         }
 
-        final Trade charge = new Trade(this.getName(), ess);
+        final Trade charge = new Trade(this.getName(), getFullCommand(args), ess);
         charge.isAffordableFor(user);
         user.getAsyncTeleport().teleport(loc, charge, TeleportCause.COMMAND, getNewExceptionFuture(user.getSource(), commandLabel));
 

@@ -29,6 +29,6 @@ public class Commandtop extends EssentialsCommand {
                 user.sendTl("teleportTop", safe.getWorld().getName(), safe.getBlockX(), safe.getBlockY(), safe.getBlockZ());
             }
         });
-        user.getAsyncTeleport().teleport(safe, new Trade(this.getName(), ess), TeleportCause.COMMAND, future);
+        user.getAsyncTeleport().teleport(safe, new Trade(this.getName(), getFullCommand(args), ess), TeleportCause.COMMAND, future);
     }
 }

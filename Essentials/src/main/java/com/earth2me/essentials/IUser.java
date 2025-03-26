@@ -344,4 +344,8 @@ public interface IUser {
     boolean isFreeze();
 
     void setFreeze(boolean freeze);
+
+    Long getCooldownForCommand(String fullCommand);
+
+    void setCooldownForCommand(String fullCommand);
 }

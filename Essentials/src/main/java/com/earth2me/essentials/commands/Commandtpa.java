@@ -43,7 +43,7 @@ public class Commandtpa extends EssentialsCommand {
         }
 
         if (player.isAutoTeleportEnabled() && !player.isIgnoredPlayer(user)) {
-            final Trade charge = new Trade(this.getName(), ess);
+            final Trade charge = new Trade(this.getName(), getFullCommand(args), ess);
             final AsyncTeleport teleport = user.getAsyncTeleport();
             teleport.setTpType(AsyncTeleport.TeleportType.TPA);
             final CompletableFuture<Boolean> future = getNewExceptionFuture(user.getSource(), commandLabel);

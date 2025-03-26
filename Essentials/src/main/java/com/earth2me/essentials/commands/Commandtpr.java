@@ -22,7 +22,7 @@ public class Commandtpr extends EssentialsCommand {
 
     @Override
     protected void run(final Server server, final User user, final String commandLabel, final String[] args) throws Exception {
-        final Trade charge = new Trade(this.getName(), ess);
+        final Trade charge = new Trade(this.getName(), getFullCommand(args), ess);
         charge.isAffordableFor(user);
         final RandomTeleport randomTeleport = ess.getRandomTeleport();
         final String defaultLocation = randomTeleport.getDefaultLocation().replace("{world}", user.getLocation().getWorld().getName());

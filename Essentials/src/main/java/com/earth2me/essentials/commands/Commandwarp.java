@@ -91,6 +91,7 @@ public class Commandwarp extends EssentialsCommand {
         final Trade chargeCmd = new Trade(this.getName(), ess);
         final BigDecimal fullCharge = chargeWarp.getCommandCost(user).add(chargeCmd.getCommandCost(user));
         final Trade charge = new Trade(fullCharge, ess);
+        charge.setFullCommand(getFullCommand(new String[]{name}));
         charge.isAffordableFor(owner);
         if (ess.getSettings().getPerWarpPermission() && !owner.isAuthorized("essentials.warps." + name)) {
             throw new TranslatableException("warpUsePermission");

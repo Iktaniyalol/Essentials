@@ -27,39 +27,49 @@ import java.util.logging.Level;
 public class Trade {
     private static FileWriter fw = null;
     private final transient String command;
+    private transient String fullCommand;
     private final transient Trade fallbackTrade;
     private final transient BigDecimal money;
     private final transient ItemStack itemStack;
     private final transient Integer exp;
     private final transient IEssentials ess;
 
+    public Trade(final String command, final String fullCommand, final IEssentials ess) {
+        this(command, fullCommand, null, null, null, null, ess);
+    }
+
+    public Trade(final String command, final String fullCommand, final Trade fallback, final IEssentials ess) {
+        this(command, fullCommand, fallback, null, null, null, ess);
+    }
+
     public Trade(final String command, final IEssentials ess) {
-        this(command, null, null, null, null, ess);
+        this(command, null, null, null, null, null, ess);
     }
 
     public Trade(final String command, final Trade fallback, final IEssentials ess) {
-        this(command, fallback, null, null, null, ess);
+        this(command, null, fallback, null, null, null, ess);
     }
 
     @Deprecated
-    public Trade(final double money, final com.earth2me.essentials.IEssentials ess) {
-        this(null, null, BigDecimal.valueOf(money), null, null, (IEssentials) ess);
+    public Trade(final double money, final IEssentials ess) {
+        this(null, null, null, BigDecimal.valueOf(money), null, null, ess);
     }
 
     public Trade(final BigDecimal money, final IEssentials ess) {
-        this(null, null, money, null, null, ess);
+        this(null, null, null, money, null, null, ess);
     }
 
     public Trade(final ItemStack items, final IEssentials ess) {
-        this(null, null, null, items, null, ess);
+        this(null, null, null, null, items, null, ess);
     }
 
     public Trade(final int exp, final IEssentials ess) {
-        this(null, null, null, null, exp, ess);
+        this(null, null, null, null, null, exp, ess);
     }
 
-    private Trade(final String command, final Trade fallback, final BigDecimal money, final ItemStack item, final Integer exp, final IEssentials ess) {
+    private Trade(final String command, final String fullCommand, final Trade fallback, final BigDecimal money, final ItemStack item, final Integer exp, final IEssentials ess) {
         this.command = command;
+        this.fullCommand = fullCommand;
         this.fallbackTrade = fallback;
         this.money = money;
         this.itemStack = item;
@@ -275,6 +285,7 @@ public class Trade {
                 throw (ChargeException) e.getCause();
             }
         }
+        applyCooldown(user);
     }
 
     public void charge(final IUser user, final CompletableFuture<Boolean> future) {
@@ -324,6 +335,16 @@ public class Trade {
         if (ess.getSettings().isDebug()) {
             ess.getLogger().log(Level.INFO, "charge user " + user.getName() + " completed");
         }
+        applyCooldown(user);
+    }
+
+    private void applyCooldown(final IUser user) {
+        if (ess.getSettings().isCommandCooldownsEnabled()
+                && fullCommand != null
+                && !user.isAuthorized("essentials.commandcooldowns.bypass")
+                && !user.isAuthorized("essentials.commandcooldowns.bypass." + fullCommand)) {
+            user.setCooldownForCommand(fullCommand);
+        }
     }
 
     public BigDecimal getMoney() {
@@ -336,6 +357,14 @@ public class Trade {
 
     public Integer getExperience() {
         return exp;
+    }
+
+    public String getFullCommand() {
+        return fullCommand;
+    }
+
+    public void setFullCommand(String fullCommand) {
+        this.fullCommand = fullCommand;
     }
 
     public TradeType getType() {

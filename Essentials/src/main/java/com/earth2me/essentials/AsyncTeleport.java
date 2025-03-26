@@ -275,6 +275,7 @@ public class AsyncTeleport implements IAsyncTeleport {
             if (!chargeFor.getCommandCost(teleportOwner).equals(BigDecimal.ZERO)) {
                 //By converting a command cost to a regular cost, the command cost permission isn't checked when executing the charge after teleport.
                 cashCharge = new Trade(chargeFor.getCommandCost(teleportOwner), ess);
+                cashCharge.setFullCommand(chargeFor.getFullCommand());
             }
         }
 
@@ -325,6 +326,7 @@ public class AsyncTeleport implements IAsyncTeleport {
             if (!chargeFor.getCommandCost(teleporter).equals(BigDecimal.ZERO)) {
                 //By converting a command cost to a regular cost, the command cost permission isn't checked when executing the charge after teleport.
                 cashCharge = new Trade(chargeFor.getCommandCost(teleporter), ess);
+                cashCharge.setFullCommand(chargeFor.getFullCommand());
             }
         }
 

@@ -5,11 +5,13 @@ import com.earth2me.essentials.Essentials;
 import com.earth2me.essentials.IEssentialsModule;
 import com.earth2me.essentials.Trade;
 import com.earth2me.essentials.User;
+import com.earth2me.essentials.utils.DateUtil;
 import com.earth2me.essentials.utils.FormatUtil;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.ess3.api.IEssentials;
+import net.ess3.api.IUser;
 import net.ess3.api.TranslatableException;
 import net.ess3.provider.KnownCommandsProvider;
 import org.bukkit.Server;
@@ -166,20 +168,31 @@ public abstract class EssentialsCommand implements IEssentialsCommand {
 
     @Override
     public final void run(final Server server, final User user, final String commandLabel, final Command cmd, final String[] args) throws Exception {
-        final Trade charge = new Trade(this.getName(), ess);
+        final String fullCommand = getFullCommand(args);
+        final Trade charge = new Trade(this.getName(), getFullCommand(args), ess);
         charge.isAffordableFor(user);
-        boolean cooldownFound = false;
+        Long cooldown = null;
+
         if (ess.getSettings().isCommandCooldownsEnabled()
                 && !user.isAuthorized("essentials.commandcooldowns.bypass")
                 && !user.isAuthorized("essentials.commandcooldowns.bypass." + this.getName())) {
-            final String fullCommand = this.getName();
-
-            cooldownFound = user.checkCooldownForCommand(fullCommand);
+            cooldown = user.getCooldownForCommand(fullCommand);
         }
-        if (!cooldownFound) {
+        if (cooldown == null) {
             run(server, user, commandLabel, args);
             charge.charge(user);
+        } else {
+            final String commandCooldownTime = DateUtil.formatDateDiff(cooldown);
+            user.sendTl("commandCooldown", commandCooldownTime);
         }
+    }
+
+    protected String getFullCommand(String[] args) {
+        final StringBuilder fullCommand = new StringBuilder(this.getName());
+        for (String arg : args) {
+            fullCommand.append(' ').append(arg);
+        }
+        return fullCommand.toString();
     }
 
     protected void run(final Server server, final User user, final String commandLabel, final String[] args) throws Exception {

@@ -23,7 +23,7 @@ public class Commandspawn extends EssentialsCommand {
 
     @Override
     public void run(final Server server, final User user, final String commandLabel, final String[] args) throws Exception {
-        final Trade charge = new Trade(this.getName(), ess);
+        final Trade charge = new Trade(this.getName(), getFullCommand(args), ess);
         charge.isAffordableFor(user);
         if (args.length > 0 && user.isAuthorized("essentials.spawn.others")) {
             final User otherUser = getPlayer(server, user, args, 0);

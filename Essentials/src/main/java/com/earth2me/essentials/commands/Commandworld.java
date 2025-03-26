@@ -62,7 +62,7 @@ public class Commandworld extends EssentialsCommand {
         final Location loc = user.getLocation();
         final Location target = new Location(world, loc.getBlockX() * factor + .5, loc.getBlockY(), loc.getBlockZ() * factor + .5);
 
-        final Trade charge = new Trade(this.getName(), ess);
+        final Trade charge = new Trade(this.getName(), getFullCommand(args), ess);
         charge.isAffordableFor(user);
         user.getAsyncTeleport().teleport(target, charge, TeleportCause.COMMAND, getNewExceptionFuture(user.getSource(), commandLabel));
 

@@ -708,18 +708,6 @@ public class EssentialsPlayerListener implements Listener, FakeAccessor {
         if (update) {
             user.updateActivityOnInteract(broadcast);
         }
-
-        if (ess.getSettings().isCommandCooldownsEnabled()
-            && !user.isAuthorized("essentials.commandcooldowns.bypass")
-            && (pluginCommand == null || !user.isAuthorized("essentials.commandcooldowns.bypass." + pluginCommand.getName()))) {
-            final int argStartIndex = effectiveCommand.indexOf(" ");
-            final String args = argStartIndex == -1 ? "" // No arguments present
-                : " " + effectiveCommand.substring(argStartIndex); // arguments start at argStartIndex; substring from there.
-            final String fullCommand = pluginCommand == null ? effectiveCommand : pluginCommand.getName() + args;
-
-            final boolean cooldownFound = user.checkCooldownForCommand(fullCommand);
-            if (cooldownFound) event.setCancelled(true);
-        }
     }
 
     @EventHandler(priority = EventPriority.NORMAL)

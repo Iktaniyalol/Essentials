@@ -63,11 +63,11 @@ public class Commandback extends EssentialsCommand {
         if (requester == null) {
             user.getAsyncTeleport().back(null, null, getNewExceptionFuture(sender, commandLabel));
         } else if (!requester.equals(user)) {
-            final Trade charge = new Trade(this.getName(), this.ess);
+            final Trade charge = new Trade(this.getName(), getFullCommand(new String[]{requester.getName()}), this.ess);
             charge.isAffordableFor(requester);
             user.getAsyncTeleport().back(requester, charge, getNewExceptionFuture(sender, commandLabel));
         } else {
-            final Trade charge = new Trade(this.getName(), this.ess);
+            final Trade charge = new Trade(this.getName(), getFullCommand(new String[]{}), this.ess);
             charge.isAffordableFor(user);
             user.getAsyncTeleport().back(charge, getNewExceptionFuture(sender, commandLabel));
         }

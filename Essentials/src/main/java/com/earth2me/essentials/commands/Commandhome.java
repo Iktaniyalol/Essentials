@@ -25,7 +25,7 @@ public class Commandhome extends EssentialsCommand {
     // This method contains an undocumented translation parameters #EasterEgg
     @Override
     public void run(final Server server, final User user, final String commandLabel, final String[] args) throws Exception {
-        final Trade charge = new Trade(this.getName(), ess);
+        final Trade charge = new Trade(this.getName(), getFullCommand(args), ess);
         User player = user;
         String homeName = "";
         final String[] nameParts;

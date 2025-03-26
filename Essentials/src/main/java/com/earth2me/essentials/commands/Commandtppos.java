@@ -50,7 +50,7 @@ public class Commandtppos extends EssentialsCommand {
         if (x > 30000000 || y > 30000000 || z > 30000000 || x < -30000000 || y < -30000000 || z < -30000000) {
             throw new NotEnoughArgumentsException(user.playerTl("teleportInvalidLocation"));
         }
-        final Trade charge = new Trade(this.getName(), ess);
+        final Trade charge = new Trade(this.getName(), getFullCommand(args), ess);
         charge.isAffordableFor(user);
         user.sendTl("teleporting", loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
         user.getAsyncTeleport().teleport(loc, charge, TeleportCause.COMMAND, getNewExceptionFuture(user.getSource(), commandLabel));

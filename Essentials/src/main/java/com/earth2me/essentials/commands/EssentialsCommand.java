@@ -11,7 +11,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.ess3.api.IEssentials;
-import net.ess3.api.IUser;
 import net.ess3.api.TranslatableException;
 import net.ess3.provider.KnownCommandsProvider;
 import org.bukkit.Server;

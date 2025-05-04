@@ -1,12 +1,15 @@
 package com.earth2me.essentials.commands;
 
 import com.earth2me.essentials.CommandSource;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 public class Commandwarpinfo extends EssentialsCommand {
 
@@ -21,8 +24,13 @@ public class Commandwarpinfo extends EssentialsCommand {
         }
         final String name = args[0];
         final Location loc = ess.getWarps().getWarp(name);
+        final UUID lastOwner = ess.getWarps().getLastOwner(name);
+        OfflinePlayer player = Bukkit.getOfflinePlayer(lastOwner);
+        String playerName = player.getName();
+
         sender.sendTl("warpInfo", name);
         sender.sendTl("whoisLocation", loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+        sender.sendTl("warpinfoOwner", playerName);
     }
 
     @Override

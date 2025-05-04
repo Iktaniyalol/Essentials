@@ -99,6 +99,12 @@ public interface ISettings extends IConf {
 
     boolean getPerWarpPermission();
 
+    Set<String> getWarpsCount();
+
+    int getWarpLimit(final User user);
+
+    int getWarpLimit(final String set);
+
     boolean getProtectBoolean(final String configName, boolean def);
 
     int getProtectCreeperMaxHeight();

@@ -774,6 +774,35 @@ public class Settings implements net.ess3.api.ISettings {
     }
 
     @Override
+    public Set<String> getWarpsCount() {
+        final CommentedConfigurationNode section = config.getSection("setwarp-count");
+        return section == null ? null : ConfigurateUtil.getKeys(section);
+    }
+
+    @Override
+    public int getWarpLimit(final User user) {
+        int limit = 1;
+        if (user.isAuthorized("essentials.setwarp")) {
+            limit = getWarpLimit("default");
+        }
+
+        final Set<String> warpList = getWarpsCount();
+        if (warpList != null) {
+            for (final String set : warpList) {
+                if (user.isAuthorized("essentials.setwarp." + set) && limit < getWarpLimit(set)) {
+                    limit = getWarpLimit(set);
+                }
+            }
+        }
+        return limit;
+    }
+
+    @Override
+    public int getWarpLimit(final String set) {
+        return config.getInt("setwarp-count." + set, config.getInt("setwarp-count.default", 3));
+    }
+
+    @Override
     public Map<String, Object> getListGroupConfig() {
         final CommentedConfigurationNode node = config.getSection("list");
         if (node != null && node.isMap()) {

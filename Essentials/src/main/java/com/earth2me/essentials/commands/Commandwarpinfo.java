@@ -25,8 +25,8 @@ public class Commandwarpinfo extends EssentialsCommand {
         final String name = args[0];
         final Location loc = ess.getWarps().getWarp(name);
         final UUID lastOwner = ess.getWarps().getLastOwner(name);
-        OfflinePlayer player = Bukkit.getOfflinePlayer(lastOwner);
-        String playerName = player.getName();
+        final OfflinePlayer player = Bukkit.getOfflinePlayer(lastOwner);
+        final String playerName = player.getName();
 
         sender.sendTl("warpInfo", name);
         sender.sendTl("whoisLocation", loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());

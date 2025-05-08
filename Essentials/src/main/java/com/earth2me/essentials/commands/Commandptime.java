@@ -8,9 +8,11 @@ import com.earth2me.essentials.utils.DescParseTickFormat;
 import com.google.common.collect.Lists;
 import org.bukkit.Server;
 import org.bukkit.World;
-import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.StringJoiner;
 
 public class Commandptime extends EssentialsLoopCommand {
     private static final List<String> getAliases = Arrays.asList("get", "list", "show", "display");
@@ -38,7 +40,7 @@ public class Commandptime extends EssentialsLoopCommand {
             }
 
             // Default to showing the player times of all online users for console when no arguments are provided
-            Iterable<User> onlineUsers = ess.getOnlineUsers();
+            final Iterable<User> onlineUsers = ess.getOnlineUsers();
             sender.sendTl("pTimePlayers");
             onlineUsers.forEach(player -> getUserTime(sender, player));
         }

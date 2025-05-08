@@ -49,7 +49,7 @@ public class Commandpweather extends EssentialsLoopCommand {
             }
 
             // Default to showing the weather of all online users for console when no arguments are provided
-            Iterable<User> onlineUsers = ess.getOnlineUsers();
+            final Iterable<User> onlineUsers = ess.getOnlineUsers();
             sender.sendTl("pWeatherPlayers");
             onlineUsers.forEach(player -> getUserWeather(sender, player));
         }

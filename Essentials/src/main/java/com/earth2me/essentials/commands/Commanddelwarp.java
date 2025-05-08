@@ -23,12 +23,12 @@ public class Commanddelwarp extends EssentialsCommand {
         if (args.length == 0) {
             throw new NotEnoughArgumentsException();
         }
-        User user = ess.getUser(sender.getPlayer());
+        final User user = ess.getUser(sender.getPlayer());
         //Check if warp exists before calling the event
         if (ess.getWarps().isWarp(args[0])) {
             if (user != null && !user.isAuthorized("essentials.delwarp.others")) {
                 final Collection<String> warps = ess.getWarps().getList();
-                List<String> playerWarps = new ArrayList<>();
+                final List<String> playerWarps = new ArrayList<>();
                 for (String warp : warps) {
                     if (ess.getWarps().getLastOwner(warp).equals(user.getUUID())) {
                         playerWarps.add(warp);

@@ -38,13 +38,13 @@ public class Commandpweather extends EssentialsLoopCommand {
                     sender.sendTl("pWeatherPlayers");
                 }
                 loopOnlinePlayersConsumer(server, sender, false, true, args[1], player -> getUserWeather(sender, player));
-                return;
+                throw new NoChargeException();
             }
 
             if (args.length == 1 || sender.isPlayer()) { // /pweather get
                 if (sender.isPlayer()) {
                     getUserWeather(sender, sender.getUser());
-                    return;
+                    throw new NoChargeException();
                 }
                 throw new NotEnoughArgumentsException(); // We cannot imply the target for console
             }
@@ -60,7 +60,7 @@ public class Commandpweather extends EssentialsLoopCommand {
 
         if (args.length > 1 && !sender.isAuthorized("essentials.pweather.others") && !args[1].equalsIgnoreCase(sender.getSelfSelector())) {
             sender.sendTl("pWeatherOthersPermission");
-            return;
+            throw new NoChargeException();
         }
 
         final String weather = args[0].toLowerCase();
@@ -76,7 +76,7 @@ public class Commandpweather extends EssentialsLoopCommand {
 
         if (weather.equalsIgnoreCase("reset")) {
             sender.sendTl("pWeatherReset", joiner.toString());
-            return;
+            throw new NoChargeException();
         }
 
         sender.sendTl("pWeatherSet", weather, joiner.toString());

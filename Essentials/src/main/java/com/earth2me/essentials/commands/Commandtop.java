@@ -30,5 +30,6 @@ public class Commandtop extends EssentialsCommand {
             }
         });
         user.getAsyncTeleport().teleport(safe, new Trade(this.getName(), getFullCommand(args), ess), TeleportCause.COMMAND, future);
+        throw new NoChargeException();
     }
 }

@@ -25,6 +25,8 @@ dependencyResolutionManagement {
             content { includeGroup("net.kyori") }
             content { includeGroup("org.apache.logging.log4j") }
         }
+        maven("https://repo.extendedclip.com/content/repositories/placeholderapi/") {
+        }
     }
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 }

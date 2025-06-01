@@ -427,9 +427,6 @@ backup:
   # The example command below utilizes rdiff-backup: https://rdiff-backup.net
   #command: 'rdiff-backup World1 backups/World1'
 
-# Set this to true to enable permissions per warp.
-per-warp-permission: false
-
 # Sort the output of the /list command by groups.
 # You can hide and merge the groups displayed in /list by defining the desired behavior here.
 # Detailed instructions and examples can be found on the wiki: https://wiki.ess3.net/wiki/List
@@ -566,7 +563,7 @@ custom-quit-message: "none"
 # Set this to "none" to use the 'custom-join-message' setting for every join.
 #
 # Available placeholders:
-# {PLAYER} - The player's display name. 
+# {PLAYER} - The player's display name.
 # {USERNAME} - The player's username.
 # {OLDUSERNAME} - The player's old username.
 # {PREFIX} - The player's prefix.
@@ -802,6 +799,28 @@ confirm-home-overwrite: false
 
 ############################################################
 # +------------------------------------------------------+ #
+# |                        Warps                         | #
+# +------------------------------------------------------+ #
+############################################################
+
+# Set this true to enable permission per warp.
+per-warp-permission: false
+
+# Configure how many warps user can have
+# Players need essentials.setwarp before they can have warps
+# You can set the default number of warps using the 'default' rank below.
+# To remove the warp limit entirely, give people 'essentials.setwarp.unlimited'.
+# To grant different warp amounts to different people, you need to define a 'warp-rank' below.
+# Create the 'warp-rank' below, and give the matching permission: essentials.setwarp.<warp-rank>
+setwarp-count:
+  default: 0
+  vip: 2
+  staff: 10
+
+# In this example someone with 'essentials.setwarp.vip' will have 2 warps.
+
+############################################################
+# +------------------------------------------------------+ #
 # |                       Economy                        | #
 # +------------------------------------------------------+ #
 ############################################################
@@ -923,7 +942,7 @@ chat:
   # You can add command costs for shout/question by adding 'chat-shout' and 'chat-question' to the 'command-costs' section above.
   radius: 0
 
-  # Chat formatting can be configured in two ways: 
+  # Chat formatting can be configured in two ways:
   #  - A standard format for all chat ('format' section)
   #  - Group-specific chat formats for extra variation ('group-formats' section)
   #
@@ -1256,7 +1275,7 @@ random-respawn-location: "none"
 spawn-on-join: false
 # The following value of 'guests' states that all players in the 'guests' group will be teleported to spawn when joining.
 #spawn-on-join: guests
-# The following list value states that all players in the 'guests' or 'admin' groups will be teleported to spawn when joining. 
+# The following list value states that all players in the 'guests' or 'admin' groups will be teleported to spawn when joining.
 #spawn-on-join:
 #  - guests
 #  - admin

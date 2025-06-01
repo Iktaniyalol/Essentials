@@ -24,34 +24,30 @@ public class Commandptime extends EssentialsLoopCommand {
     @Override
     public void run(final Server server, final CommandSource sender, final String commandLabel, final String[] args) throws Exception {
         if (args.length == 0 || getAliases.contains(args[0].toLowerCase())) {
-            if (args.length > 1) { // /ptime get md_5 || /ptime get *
-                if (args[1].equals("*") || args[1].equals("**")) {
+            // /ptime get player || /ptime get *
+            if (args.length > 1) {
+                if ("*".equals(args[1]) || "**".equals(args[1])) {
                     sender.sendTl("pTimePlayers");
                 }
                 loopOnlinePlayersConsumer(server, sender, false, true, args[1], player -> getUserTime(sender, player));
-                return;
+                throw new NoChargeException();
             }
 
-            if (args.length == 1 || sender.isPlayer()) { // /ptime get
-                if (sender.isPlayer()) {
-                    getUserTime(sender, sender.getUser());
-                    return;
-                }
-                throw new NotEnoughArgumentsException(); // We cannot imply the target for console
+            //ptime get
+            if (sender.isPlayer() && args.length == 1) {
+                getUserTime(sender, sender.getUser());
+                throw new NoChargeException();
             }
 
             // Default to showing the player times of all online users for console when no arguments are provided
-            if (ess.getOnlinePlayers().size() > 1) {
-                sender.sendTl("pTimePlayers");
-            }
-            for (final User player : ess.getOnlineUsers()) {
-                getUserTime(sender, player);
-            }
+            final Iterable<User> onlineUsers = ess.getOnlineUsers();
+            sender.sendTl("pTimePlayers");
+            onlineUsers.forEach(player -> getUserTime(sender, player));
         }
 
         if (args.length > 1 && !sender.isAuthorized("essentials.ptime.others") && !args[1].equalsIgnoreCase(sender.getSelfSelector())) {
             sender.sendTl("pTimeOthersPermission");
-            return;
+            throw new NoChargeException();
         }
 
         String time = args[0];
@@ -79,7 +75,7 @@ public class Commandptime extends EssentialsLoopCommand {
 
         if (ticks == null) {
             sender.sendTl("pTimeReset", joiner.toString());
-            return;
+            throw new NoChargeException();
         }
 
         final String formattedTime = DescParseTickFormat.format(ticks);

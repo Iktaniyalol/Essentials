@@ -4,4 +4,5 @@ plugins {
 
 dependencies {
     compileOnly project(':EssentialsX')
+    compileOnly 'me.clip:placeholderapi:2.11.6'
 }

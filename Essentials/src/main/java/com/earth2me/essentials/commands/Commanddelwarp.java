@@ -1,6 +1,7 @@
 package com.earth2me.essentials.commands;
 
 import com.earth2me.essentials.CommandSource;
+import com.earth2me.essentials.User;
 import net.ess3.api.TranslatableException;
 import net.essentialsx.api.v2.events.WarpModifyEvent;
 import org.bukkit.Bukkit;
@@ -8,6 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.Server;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,8 +23,21 @@ public class Commanddelwarp extends EssentialsCommand {
         if (args.length == 0) {
             throw new NotEnoughArgumentsException();
         }
+        final User user = ess.getUser(sender.getPlayer());
         //Check if warp exists before calling the event
         if (ess.getWarps().isWarp(args[0])) {
+            if (user != null && !user.isAuthorized("essentials.delwarp.others")) {
+                final Collection<String> warps = ess.getWarps().getList();
+                final List<String> playerWarps = new ArrayList<>();
+                for (String warp : warps) {
+                    if (ess.getWarps().getLastOwner(warp).equals(user.getUUID())) {
+                        playerWarps.add(warp);
+                    }
+                }
+                if (!playerWarps.contains(args[0])) {
+                    throw new TranslatableException("warpNotExist");
+                }
+            }
             Location location;
             try {
                 location = ess.getWarps().getWarp(args[0]);

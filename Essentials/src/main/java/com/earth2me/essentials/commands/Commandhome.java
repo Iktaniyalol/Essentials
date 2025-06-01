@@ -83,12 +83,6 @@ public class Commandhome extends EssentialsCommand {
                     }
                 } else if (homes.isEmpty() || !finalPlayer.hasValidHomes()) {
                     showError(user.getBase(), new TranslatableException("noHomeSetPlayer"), commandLabel);
-                } else if (homes.size() == 1 && finalPlayer.equals(user)) {
-                    try {
-                        goHome(user, finalPlayer, homes.get(0), charge, getNewExceptionFuture(user.getSource(), commandLabel));
-                    } catch (final Exception exception) {
-                        showError(user.getBase(), exception, commandLabel);
-                    }
                 } else {
                     final int count = homes.size();
                     if (user.isAuthorized("essentials.home.bed")) {

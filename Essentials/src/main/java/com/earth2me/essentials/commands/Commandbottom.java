@@ -31,5 +31,6 @@ public class Commandbottom extends EssentialsCommand {
             }
         });
         user.getAsyncTeleport().teleport(safe, new Trade(this.getName(), getFullCommand(args), ess), PlayerTeleportEvent.TeleportCause.COMMAND, future);
+        throw new NoChargeException();
     }
 }

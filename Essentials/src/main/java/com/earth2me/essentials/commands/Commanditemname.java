@@ -6,6 +6,7 @@ import com.earth2me.essentials.utils.FormatUtil;
 import com.earth2me.essentials.utils.MaterialUtil;
 import com.earth2me.essentials.utils.TriState;
 import com.google.common.collect.Lists;
+import net.ess3.api.TranslatableException;
 import org.bukkit.Server;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -24,15 +25,13 @@ public class Commanditemname extends EssentialsCommand {
     protected void run(final Server server, final User user, final String commandLabel, final String[] args) throws Exception {
         final ItemStack item = Inventories.getItemInHand(user.getBase());
         if (item == null || MaterialUtil.isAir(item.getType())) {
-            user.sendTl("itemnameInvalidItem");
-            return;
+            throw new TranslatableException("itemnameInvalidItem");
         }
 
         final TriState wildcard = user.isAuthorizedExact(PERM_PREFIX + "*");
         final TriState material = user.isAuthorizedExact(PERM_PREFIX + item.getType().name().toLowerCase());
         if ((wildcard == TriState.TRUE && material != TriState.FALSE) || ((wildcard != TriState.TRUE) && material == TriState.TRUE)) {
-            user.sendTl("itemnameInvalidItem");
-            return;
+            throw new TranslatableException("itemnameInvalidItem");
         }
 
         String name = FormatUtil.formatString(user, "essentials.itemname", getFinalArg(args, 0)).trim();

@@ -59,8 +59,7 @@ public class Commandsethome extends EssentialsCommand {
         if (ess.getSettings().isConfirmHomeOverwrite() && usersHome.hasHome(name) && (!name.equals(usersHome.getLastHomeConfirmation()) || name.equals(usersHome.getLastHomeConfirmation()) && System.currentTimeMillis() - usersHome.getLastHomeConfirmationTimestamp() > TimeUnit.MINUTES.toMillis(2))) {
             usersHome.setLastHomeConfirmation(name);
             usersHome.setLastHomeConfirmationTimestamp();
-            user.sendTl("homeConfirmation", name);
-            return;
+            throw new TranslatableException("homeConfirmation", name);
         }
 
         final Location prevHomeLoc = usersHome.getHome(name);

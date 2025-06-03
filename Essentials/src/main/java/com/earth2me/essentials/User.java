@@ -72,6 +72,7 @@ public class User extends UserData implements Comparable<User>, IMessageRecipien
     private String lastHomeConfirmation;
 
     // User teleport variables
+    private TpaRequest outgoingTpaRequest;
     private final transient LinkedHashMap<String, TpaRequest> teleportRequestQueue = new LinkedHashMap<>();
 
     // User properties
@@ -373,6 +374,7 @@ public class User extends UserData implements Comparable<User>, IMessageRecipien
 
         // Add request to queue
         teleportRequestQueue.put(request.getName(), request);
+        player.setOutgoingTpaRequest(request);
     }
 
     public Collection<String> getPendingTpaKeys() {
@@ -400,6 +402,12 @@ public class User extends UserData implements Comparable<User>, IMessageRecipien
             return request;
         }
         teleportRequestQueue.remove(playerUsername);
+
+        // Очищаем исходящий запрос у отправителя
+        final User requester = ess.getUser(request.getRequesterUuid());
+        if (requester != null) {
+            requester.clearOutgoingTpaRequest();
+        }
         if (inform) {
             sendTl("requestTimedOutFrom", ess.getUser(request.getRequesterUuid()).getDisplayName());
         }
@@ -407,7 +415,14 @@ public class User extends UserData implements Comparable<User>, IMessageRecipien
     }
 
     public TpaRequest removeTpaRequest(String playerUsername) {
-        return teleportRequestQueue.remove(playerUsername);
+        final TpaRequest request = teleportRequestQueue.remove(playerUsername);
+        if (request != null) {
+            final User requester = ess.getUser(request.getRequesterUuid());
+            if (requester != null) {
+                requester.clearOutgoingTpaRequest();
+            }
+        }
+        return request;
     }
 
     @Override
@@ -438,9 +453,36 @@ public class User extends UserData implements Comparable<User>, IMessageRecipien
                     sendTl("requestTimedOutFrom", ess.getUser(request.getRequesterUuid()).getDisplayName());
                 }
                 teleportRequestQueue.remove(key);
+
+                // Очищаем исходящий запрос у отправителя
+                final User requester = ess.getUser(request.getRequesterUuid());
+                if (requester != null) {
+                    requester.clearOutgoingTpaRequest();
+                }
             }
         }
         return nextRequest;
+    }
+
+    public void setOutgoingTpaRequest(TpaRequest request) {
+        this.outgoingTpaRequest = request;
+    }
+
+    public TpaRequest getOutgoingTpaRequest() {
+        return outgoingTpaRequest;
+    }
+
+    public void clearOutgoingTpaRequest() {
+        this.outgoingTpaRequest = null;
+    }
+
+    public boolean hasActiveOutgoingRequest() {
+        if (outgoingTpaRequest == null) {
+            return false;
+        }
+
+        final long timeout = ess.getSettings().getTpaAcceptCancellation() * 1000;
+        return timeout <= 0 || (System.currentTimeMillis() - outgoingTpaRequest.getTime()) <= timeout;
     }
 
     public String getNick() {

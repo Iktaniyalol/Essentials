@@ -1,6 +1,7 @@
 package com.earth2me.essentials.commands;
 
 import com.earth2me.essentials.AsyncTeleport;
+import com.earth2me.essentials.IUser;
 import com.earth2me.essentials.Trade;
 import com.earth2me.essentials.User;
 import net.ess3.api.TranslatableException;
@@ -37,9 +38,12 @@ public class Commandtpa extends EssentialsCommand {
             throw new TranslatableException("noPerm", "essentials.worlds." + player.getWorld().getName());
         }
 
-        // Don't let sender request teleport twice to the same player.
-        if (player.hasOutstandingTpaRequest(user.getName(), false)) {
-            throw new TranslatableException("requestSentAlready", player.getDisplayName());
+        // Don't let sender request teleport twice to any player.
+        if (user.hasActiveOutgoingRequest()) {
+            final IUser.TpaRequest request = user.getOutgoingTpaRequest();
+            if (request != null) {
+                throw new TranslatableException("requestSentAlready");
+            }
         }
 
         if (player.isAutoTeleportEnabled() && !player.isIgnoredPlayer(user)) {
@@ -76,6 +80,7 @@ public class Commandtpa extends EssentialsCommand {
         if (user.isAuthorized("essentials.tpacancel")) {
             user.sendTl("typeTpacancel");
         }
+        throw new NoChargeException();
     }
 
     @Override

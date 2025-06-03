@@ -121,11 +121,13 @@ public class EssentialsEntityListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onEntityDamage(final EntityDamageEvent event) {
-        if (event.getEntity() instanceof Player && ess.getUser((Player) event.getEntity()).isGodModeEnabled()) {
+        if (event.getEntity() instanceof Player) {
             final Player player = (Player) event.getEntity();
-            player.setFireTicks(0);
-            player.setRemainingAir(player.getMaximumAir());
-            event.setCancelled(true);
+            if (ess.getUser(player).isGodModeEnabled() || ess.getUser(player).hasInvulnerabilityAfterTeleport()) {
+                player.setFireTicks(0);
+                player.setRemainingAir(player.getMaximumAir());
+                event.setCancelled(true);
+            }
         }
     }
 

@@ -190,6 +190,8 @@ public interface ISettings extends IConf {
 
     boolean isEcoLogEnabled();
 
+    boolean isEcoLogUUIDEnabled();
+
     boolean isEcoLogUpdateEnabled();
 
     boolean realNamesOnList();
@@ -214,7 +216,9 @@ public interface ISettings extends IConf {
 
     long getAutoAfk();
 
-    long getAutoAfkKick();
+    long getAutoAfkTimeout();
+
+    List<String> getAfkTimeoutCommands();
 
     boolean getFreezeAfkPlayers();
 
@@ -322,6 +326,8 @@ public interface ISettings extends IConf {
 
     boolean isCustomServerFullMessage();
 
+    boolean isCustomWhitelistMessage();
+
     boolean isNotifyNoNewMail();
 
     boolean isDropItemsIfFull();
@@ -355,6 +361,8 @@ public interface ISettings extends IConf {
     boolean isWorldChangeFlyResetEnabled();
 
     boolean isWorldChangePreserveFlying();
+
+    boolean isGamemodeChangePreserveFlying();
 
     boolean isWorldChangeSpeedResetEnabled();
 

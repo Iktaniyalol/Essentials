@@ -27,6 +27,9 @@ public class Commandsetwarp extends EssentialsCommand {
             throw new TranslatableException("invalidWarpName");
         }
 
+        if (StringUtil.isReservedFileName(args[0])) {
+            throw new TranslatableException("invalidWarpName");
+        }
         checkWarpLimit(user, args[0]);
 
         final IWarps warps = ess.getWarps();

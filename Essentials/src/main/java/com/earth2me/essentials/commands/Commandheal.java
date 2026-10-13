@@ -70,8 +70,7 @@ public class Commandheal extends EssentialsLoopCommand {
                     player.removePotionEffect(effect.getType());
                 }
             }
-            if (!sender.isPlayer() || !sender.getPlayer().equals(user.getBase())) {
-                sender.sendTl("healOther", user.getDisplayName());
+            if (!sender.isPlayer() || !user.getBase().equals(sender.getPlayer())) {                sender.sendTl("healOther", user.getDisplayName());
             }
         } catch (final QuietAbortException e) {
             //Handle Quietly
@@ -81,7 +80,7 @@ public class Commandheal extends EssentialsLoopCommand {
     @Override
     protected List<String> getTabCompleteOptions(final Server server, final CommandSource sender, final String commandLabel, final String[] args) {
         if (args.length == 1 && sender.isAuthorized("essentials.heal.others")) {
-            return getPlayers(server, sender);
+            return getPlayers(sender);
         } else {
             return Collections.emptyList();
 

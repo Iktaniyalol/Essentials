@@ -7,6 +7,11 @@ dependencyResolutionManagement {
                 includeGroup("net.md_5")
             }
         }
+        maven("https://repo.essentialsx.net/releases") {
+            content {
+                includeGroup("net.essentialsx.deps")
+            }
+        }
         maven("https://jitpack.io") {
             content { includeGroup("com.github.milkbowl") }
             content { includeGroup("com.github.MinnDevelopment") }

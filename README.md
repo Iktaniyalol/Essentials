@@ -50,7 +50,7 @@ To build EssentialsX, you need JDK 8 or higher installed on your system.
 Clone this repository, then run the following command:
 
 * On Linux or macOS: `./gradlew build`
-* On Windows: `gradlew build`
+* On Windows: `gradlew build -x test`
 
 You can then find builds of EssentialsX modules in the `jars/` directory.
 

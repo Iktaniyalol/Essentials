@@ -307,6 +307,7 @@ public interface IUser {
     class TpaRequest {
         private final String name;
         private final UUID requesterUuid;
+        private String target;
         private boolean here;
         private Location location;
         private long time;
@@ -318,6 +319,14 @@ public interface IUser {
 
         public String getName() {
             return name;
+        }
+
+        public String getTarget() {
+            return target;
+        }
+
+        public void setTarget(String target) {
+            this.target = target;
         }
 
         public UUID getRequesterUuid() {

@@ -5,8 +5,8 @@ import com.earth2me.essentials.Essentials;
 import com.earth2me.essentials.Trade;
 import com.earth2me.essentials.User;
 import com.earth2me.essentials.chat.EssentialsChat;
+import com.earth2me.essentials.chat.PlaceholderApiHook;
 import com.earth2me.essentials.utils.FormatUtil;
-import me.clip.placeholderapi.PlaceholderAPI;
 import net.ess3.api.events.LocalChatSpyEvent;
 import net.ess3.provider.AbstractChatEvent;
 import net.essentialsx.api.v2.ChatType;
@@ -72,8 +72,7 @@ public abstract class AbstractChatHandler {
         final long configRadius = ess.getSettings().getChatRadius();
         chat.setRadius(Math.max(configRadius, 0));
 
-        String formatted = FormatUtil.formatMessage(user, "essentials.chat", event.getMessage());
-        formatted = PlaceholderAPI.setPlaceholders(event.getPlayer(), formatted);
+        final String formatted = FormatUtil.formatMessage(user, "essentials.chat", event.getMessage());
         // This listener should apply the general chat formatting only...then return control back the event handler
         event.setMessage(formatted);
 
@@ -94,7 +93,7 @@ public abstract class AbstractChatHandler {
 
         final ChatType chatType = chat.getType();
         String format = ess.getSettings().getChatFormat(group, chat.getRadius() > 0 && chatType == ChatType.UNKNOWN ? ChatType.LOCAL : chatType);
-        format = PlaceholderAPI.setPlaceholders(event.getPlayer(), format);
+        format = PlaceholderApiHook.apply(event.getPlayer(), format);
         format = format.replace("{0}", group.replace("%", "%%"));
         format = format.replace("{1}", ess.getSettings().getWorldAlias(world).replace("%", "%%"));
         format = format.replace("{2}", world.substring(0, 1).toUpperCase(Locale.ENGLISH).replace("%", "%%"));

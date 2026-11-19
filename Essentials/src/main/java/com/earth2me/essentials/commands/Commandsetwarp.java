@@ -65,13 +65,13 @@ public class Commandsetwarp extends EssentialsCommand {
             final Collection<String> warps = ess.getWarps().getList();
             int count = 0;
             for (String warp : warps) {
-                if (ess.getWarps().getLastOwner(warp).equals(user.getUUID())) {
+                if (user.getUUID().equals(ess.getWarps().getLastOwner(warp))) {
                     count++;
                 }
             }
 
             if (count >= limit) {
-                if (warps.contains(name) && ess.getWarps().getLastOwner(name).equals(user.getUUID())) {
+                if (warps.contains(name) && user.getUUID().equals(ess.getWarps().getLastOwner(name))) {
                     return;
                 }
                 throw new TranslatableException("maxWarps", ess.getSettings().getWarpLimit(user));

@@ -1,6 +1,5 @@
 package com.earth2me.essentials.spawn;
 
-import com.earth2me.essentials.Kit;
 import com.earth2me.essentials.OfflinePlayerStub;
 import com.earth2me.essentials.User;
 import com.earth2me.essentials.textreader.IText;
@@ -67,9 +66,6 @@ class EssentialsSpawnPlayerListener implements Listener {
                 return;
             }
         }
-        if (tryRandomTeleport(user, ess.getSettings().getRandomRespawnLocation())) {
-            return;
-        }
         final Location spawn = spawns.getSpawn(user.getGroup());
         if (spawn != null) {
             event.setRespawnLocation(spawn);
@@ -110,9 +106,7 @@ class EssentialsSpawnPlayerListener implements Listener {
 
         final User user = ess.getUser(player);
 
-        final boolean spawnRandomly = tryRandomTeleport(user, ess.getSettings().getRandomSpawnLocation());
-
-        if (!spawnRandomly && !"none".equalsIgnoreCase(ess.getSettings().getNewbieSpawn())) {
+        if (!"none".equalsIgnoreCase(ess.getSettings().getNewbieSpawn())) {
             ess.scheduleSyncDelayedTask(new NewPlayerTeleport(user), 1L);
         }
 
@@ -130,17 +124,6 @@ class EssentialsSpawnPlayerListener implements Listener {
                 }
             }
 
-            final String kitName = ess.getSettings().getNewPlayerKit();
-            if (!kitName.isEmpty()) {
-                try {
-                    final Kit kit = new Kit(kitName.toLowerCase(Locale.ENGLISH), ess);
-                    kit.expandItems(user);
-                } catch (final Exception ex) {
-                    logger.log(Level.WARNING, ex.getMessage());
-                }
-            }
-
-            logger.log(Level.FINE, "New player join");
         }, 2L);
     }
 
@@ -169,14 +152,4 @@ class EssentialsSpawnPlayerListener implements Listener {
         }
     }
 
-    private boolean tryRandomTeleport(final User user, final String name) {
-        if (!ess.getRandomTeleport().hasLocation(name)) {
-            return false;
-        }
-        ess.getRandomTeleport().getRandomLocation(name).thenAccept(location -> {
-            final CompletableFuture<Boolean> future = new CompletableFuture<>();
-            user.getAsyncTeleport().now(location, false, PlayerTeleportEvent.TeleportCause.PLUGIN, future);
-        });
-        return true;
-    }
 }

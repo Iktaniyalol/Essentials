@@ -300,7 +300,6 @@ public class Trade {
                 throw (ChargeException) e.getCause();
             }
         }
-        applyCooldown(user);
     }
 
     public void charge(final IUser user, final CompletableFuture<Boolean> future) {
@@ -357,7 +356,7 @@ public class Trade {
         if (ess.getSettings().isCommandCooldownsEnabled()
                 && fullCommand != null
                 && !user.isAuthorized("essentials.commandcooldowns.bypass")
-                && !user.isAuthorized("essentials.commandcooldowns.bypass." + fullCommand)) {
+                && !user.isAuthorized("essentials.commandcooldowns.bypass." + (command != null ? command : fullCommand.split(" ")[0]))) {
             user.setCooldownForCommand(fullCommand);
         }
     }

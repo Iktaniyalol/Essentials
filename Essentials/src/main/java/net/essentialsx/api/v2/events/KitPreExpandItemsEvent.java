@@ -11,8 +11,6 @@ import java.util.List;
  * Called when items from a kit are about to be given to a {@link IUser user}.
  * <p>
  * This event is not cancellable and is called right before items are about to be received by the {@link #getUser() user}.
- * If you want to prevent kits from being claimed to begin with, use the {@link net.ess3.api.events.KitClaimEvent}
- * @see net.ess3.api.events.KitClaimEvent
  */
 public class KitPreExpandItemsEvent extends Event {
     private static final HandlerList handlers = new HandlerList();

@@ -160,14 +160,12 @@ public class Essentials extends JavaPlugin implements net.ess3.api.IEssentials {
     private static final Logger BUKKIT_LOGGER = Logger.getLogger("Essentials");
     private static Logger LOGGER = null;
     public static boolean TESTING = false;
-    private final transient TNTExplodeListener tntListener = new TNTExplodeListener();
     private final transient Set<String> vanishedPlayers = new LinkedHashSet<>();
     private final transient Map<String, IEssentialsCommand> commandMap = new HashMap<>();
     private final transient ProviderFactory providerFactory = new ProviderFactory(this);
     private transient ISettings settings;
     private transient Jails jails;
     private transient Warps warps;
-    private transient Worth worth;
     private transient List<IConf> confList;
     private transient Backup backup;
     private transient AbstractItemDb itemDb;
@@ -184,8 +182,6 @@ public class Essentials extends JavaPlugin implements net.ess3.api.IEssentials {
     private transient MetricsWrapper metrics;
     private transient EssentialsTimer timer;
     private transient ProviderListener recipeBookEventProvider;
-    private transient Kits kits;
-    private transient RandomTeleport randomTeleport;
     private transient UpdateChecker updateChecker;
     private transient AdventureFacet adventureFacet;
 
@@ -294,25 +290,12 @@ public class Essentials extends JavaPlugin implements net.ess3.api.IEssentials {
             balanceTop = new BalanceTopImpl(this);
             execTimer.mark("Init(BalanceTop)");
 
-            kits = new Kits(this);
-            confList.add(kits);
-            upgrade.convertKits();
-            execTimer.mark("Kits");
-
-            randomTeleport = new RandomTeleport(this);
-            confList.add(randomTeleport);
-            execTimer.mark("Init(RandomTeleport)");
-
             upgrade.afterSettings();
             execTimer.mark("Upgrade3");
 
             warps = new Warps(this.getDataFolder());
             confList.add(warps);
             execTimer.mark("Init(Warp)");
-
-            worth = new Worth(this.getDataFolder());
-            confList.add(worth);
-            execTimer.mark("Init(Worth)");
 
             itemDb = getItemDbFromConfig();
             confList.add(itemDb);
@@ -527,8 +510,6 @@ public class Essentials extends JavaPlugin implements net.ess3.api.IEssentials {
 
         final EssentialsServerListener serverListener = new EssentialsServerListener(this);
         pm.registerEvents(serverListener, this);
-
-        pm.registerEvents(tntListener, this);
 
         if (recipeBookEventProvider != null) {
             pm.registerEvents(recipeBookEventProvider, this);
@@ -936,23 +917,8 @@ public class Essentials extends JavaPlugin implements net.ess3.api.IEssentials {
     }
 
     @Override
-    public Worth getWorth() {
-        return worth;
-    }
-
-    @Override
     public Backup getBackup() {
         return backup;
-    }
-
-    @Override
-    public Kits getKits() {
-        return kits;
-    }
-
-    @Override
-    public RandomTeleport getRandomTeleport() {
-        return randomTeleport;
     }
 
     @Override

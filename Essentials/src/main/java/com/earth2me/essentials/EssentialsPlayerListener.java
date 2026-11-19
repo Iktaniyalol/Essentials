@@ -2,7 +2,6 @@ package com.earth2me.essentials;
 
 import com.destroystokyo.paper.ClientOption;
 import com.earth2me.essentials.adventure.ComponentHolder;
-import com.earth2me.essentials.commands.Commandfireball;
 import com.earth2me.essentials.craftbukkit.Inventories;
 import com.earth2me.essentials.textreader.IText;
 import com.earth2me.essentials.textreader.KeywordReplacer;
@@ -125,15 +124,6 @@ public class EssentialsPlayerListener implements Listener {
         }
     }
 
-    private static boolean isArrowPickupEvent() {
-        try {
-            Class.forName("org.bukkit.event.player.PlayerPickupArrowEvent");
-            return true;
-        } catch (final ClassNotFoundException ignored) {
-            return false;
-        }
-    }
-
     private static boolean isGameEventEvent() {
         try {
             Class.forName("org.bukkit.event.block.BlockReceiveGameEvent");
@@ -145,10 +135,6 @@ public class EssentialsPlayerListener implements Listener {
 
     public void registerEvents() {
         ess.getServer().getPluginManager().registerEvents(this, ess);
-
-        if (isArrowPickupEvent()) {
-            ess.getServer().getPluginManager().registerEvents(new ArrowPickupListener(), ess);
-        }
 
         if (isGameEventEvent()) {
             ess.getServer().getPluginManager().registerEvents(new SculkListener1_17(), ess);
@@ -1158,22 +1144,9 @@ public class EssentialsPlayerListener implements Listener {
         }
     }
 
-    private static final class ArrowPickupListener implements Listener {
-        @EventHandler(priority = EventPriority.LOW)
-        public void onArrowPickup(final org.bukkit.event.player.PlayerPickupArrowEvent event) {
-            if (event.getItem().hasMetadata(Commandfireball.FIREBALL_META_KEY)) {
-                event.setCancelled(true);
-            }
-        }
-    }
-
     private final class PickupListenerPre1_12 implements Listener {
         @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
         public void onPlayerPickupItem(final org.bukkit.event.player.PlayerPickupItemEvent event) {
-            if (event.getItem().hasMetadata(Commandfireball.FIREBALL_META_KEY)) {
-                event.setCancelled(true);
-                return;
-            }
             final User user = ess.getUser(event.getPlayer());
             if ((ess.getSettings().getDisableItemPickupWhileAfk() && user.isAfk())
                 || (user.isVanished() && !user.isAuthorizedCached("essentials.vanish.pickup"))) {

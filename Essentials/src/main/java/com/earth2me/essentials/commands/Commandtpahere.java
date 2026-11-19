@@ -38,7 +38,7 @@ public class Commandtpahere extends EssentialsCommand {
         if (user.hasActiveOutgoingRequest()) {
             final IUser.TpaRequest request = user.getOutgoingTpaRequest();
             if (request != null) {
-                throw new TranslatableException("requestSentAlready");
+                throw new TranslatableException("requestSentAlready", request.getTarget());
             }
         }
 

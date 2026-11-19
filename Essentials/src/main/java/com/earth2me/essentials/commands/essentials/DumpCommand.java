@@ -136,20 +136,14 @@ public class DumpCommand extends EssentialsTreeNode {
         ess.runTaskAsynchronously(() -> {
             boolean config = false;
             boolean discord = false;
-            boolean kits = false;
             boolean log = false;
-            boolean worth = false;
-            boolean tpr = false;
             boolean spawns = false;
             boolean commands = false;
             for (final String arg : args) {
                 if (arg.equals("*") || arg.equalsIgnoreCase("all")) {
                     config = true;
                     discord = true;
-                    kits = true;
                     log = true;
-                    worth = true;
-                    tpr = true;
                     spawns = true;
                     commands = true;
                     break;
@@ -157,14 +151,8 @@ public class DumpCommand extends EssentialsTreeNode {
                     config = true;
                 } else if (arg.equalsIgnoreCase("discord")) {
                     discord = true;
-                } else if (arg.equalsIgnoreCase("kits")) {
-                    kits = true;
                 } else if (arg.equalsIgnoreCase("log")) {
                     log = true;
-                } else if (arg.equalsIgnoreCase("worth")) {
-                    worth = true;
-                } else if (arg.equalsIgnoreCase("tpr")) {
-                    tpr = true;
                 } else if (arg.equalsIgnoreCase("spawns")) {
                     spawns = true;
                 } else if (arg.equalsIgnoreCase("commands")) {
@@ -199,14 +187,6 @@ public class DumpCommand extends EssentialsTreeNode {
                 }
             }
 
-            if (kits) {
-                try {
-                    files.add(new PasteUtil.PasteFile("kits.yml", new String(Files.readAllBytes(ess.getKits().getFile().toPath()), StandardCharsets.UTF_8)));
-                } catch (IOException e) {
-                    sender.sendTl("dumpErrorUpload", "kits.yml", e.getMessage());
-                }
-            }
-
             if (log) {
                 try {
                     files.add(new PasteUtil.PasteFile("latest.log", new String(Files.readAllBytes(Paths.get("logs", "latest.log")), StandardCharsets.UTF_8)
@@ -214,22 +194,6 @@ public class DumpCommand extends EssentialsTreeNode {
                             .replaceAll("(?:[0-9]{1,3}\\.){3}[0-9]{1,3}", "<censored ip address>")));
                 } catch (IOException e) {
                     sender.sendTl("dumpErrorUpload", "latest.log", e.getMessage());
-                }
-            }
-
-            if (worth) {
-                try {
-                    files.add(new PasteUtil.PasteFile("worth.yml", new String(Files.readAllBytes(ess.getWorth().getFile().toPath()), StandardCharsets.UTF_8)));
-                } catch (IOException e) {
-                    sender.sendTl("dumpErrorUpload", "worth.yml", e.getMessage());
-                }
-            }
-
-            if (tpr) {
-                try {
-                    files.add(new PasteUtil.PasteFile("tpr.yml", new String(Files.readAllBytes(ess.getRandomTeleport().getFile().toPath()), StandardCharsets.UTF_8)));
-                } catch (IOException e) {
-                    sender.sendTl("dumpErrorUpload", "tpr.yml", e.getMessage());
                 }
             }
 
@@ -275,7 +239,7 @@ public class DumpCommand extends EssentialsTreeNode {
 
     @Override
     protected List<String> tabComplete(CommandSource sender, String commandLabel, String[] args) {
-        final List<String> list = Lists.newArrayList("config", "kits", "log", "discord", "worth", "tpr", "spawns", "commands", "all");
+        final List<String> list = Lists.newArrayList("config", "log", "discord", "spawns", "commands", "all");
         for (String arg : args) {
             if (arg.equals("*") || arg.equalsIgnoreCase("all")) {
                 list.clear();

@@ -156,41 +156,6 @@ public class EssentialsUpgrade {
         ess.getLogger().info("To rerun the conversion type /essentials uuidconvert");
     }
 
-    private void updateRandomTeleport() {
-        if (doneFile.getBoolean("updateRandomTeleport", false)) {
-            return;
-        }
-
-        final EssentialsConfiguration config = ess.getRandomTeleport().getConfig();
-
-        if (config.getRootNode() != null) {
-            final LazyLocation center = config.getLocation("center");
-            final Location centerLoc = center != null ? center.location() : null;
-            if (center != null && centerLoc != null) {
-                final double minRange = config.getDouble("min-range", Double.MIN_VALUE);
-                final double maxRange = config.getDouble("max-range", Double.MIN_VALUE);
-                for (final World world : ess.getServer().getWorlds()) {
-                    final String propPrefix = "locations." + world.getName() + ".";
-                    config.setProperty(propPrefix + "center", centerLoc);
-
-                    if (minRange != Double.MIN_VALUE) {
-                        config.setProperty(propPrefix + "min-range", minRange);
-                    }
-                    if (maxRange != Double.MIN_VALUE) {
-                        config.setProperty(propPrefix + "max-range", maxRange);
-                    }
-                }
-            }
-            config.removeProperty("center");
-
-            config.blockingSave();
-        }
-
-        doneFile.setProperty("updateRandomTeleport", true);
-        doneFile.save();
-        ess.getLogger().info("Done converting random teleport config.");
-    }
-
     private void convertMailList() {
         if (doneFile.getBoolean("updateUsersMailList", false)) {
             return;
@@ -470,38 +435,6 @@ public class EssentialsUpgrade {
         doneFile.setProperty("updateUsersIgnoreListUUID", true);
         doneFile.save();
         ess.getLogger().info("Done converting ignore list.");
-    }
-
-    public void convertKits() {
-        if (Essentials.TESTING) {
-            return;
-        }
-
-        final Kits kits = ess.getKits();
-        final EssentialsConfiguration config = kits.getRootConfig();
-        if (doneFile.getBoolean("kitsyml", false)) {
-            return;
-        }
-
-        ess.getLogger().info("Attempting to convert old kits in config.yml to new kits.yml");
-
-        final CommentedConfigurationNode section = ess.getSettings().getKitSection();
-        if (section == null) {
-            ess.getLogger().info("No kits found to migrate.");
-            return;
-        }
-
-        final Map<String, Object> legacyKits = ConfigurateUtil.getRawMap(section);
-
-        for (final Map.Entry<String, Object> entry : legacyKits.entrySet()) {
-            ess.getLogger().info("Converting " + entry.getKey());
-            config.setRaw("kits." + entry.getKey(), entry.getValue());
-        }
-
-        config.save();
-        doneFile.setProperty("kitsyml", true);
-        doneFile.save();
-        ess.getLogger().info("Done converting kits.");
     }
 
     private void moveMotdRulesToFile(final String name) {
@@ -1118,6 +1051,5 @@ public class EssentialsUpgrade {
         convertStupidCamelCaseUserdataKeys();
         convertMailList();
         purgeBrokenNpcAccounts();
-        updateRandomTeleport();
     }
 }

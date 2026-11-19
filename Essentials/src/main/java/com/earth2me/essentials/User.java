@@ -421,6 +421,7 @@ public class User extends UserData implements Comparable<User>, IMessageRecipien
 
         // Add request to queue
         teleportRequestQueue.put(request.getName(), request);
+        request.setTarget(this.getName());
         player.setOutgoingTpaRequest(request);
     }
 
@@ -431,11 +432,6 @@ public class User extends UserData implements Comparable<User>, IMessageRecipien
     @Override
     public boolean hasPendingTpaRequests(boolean inform, boolean excludeHere) {
         return getNextTpaRequest(inform, false, excludeHere) != null;
-    }
-
-    public boolean hasOutstandingTpaRequest(String playerUsername, boolean here) {
-        final TpaRequest request = getOutstandingTpaRequest(playerUsername, false);
-        return request != null && request.isHere() == here;
     }
 
     public @Nullable TpaRequest getOutstandingTpaRequest(String playerUsername, boolean inform) {
@@ -450,7 +446,6 @@ public class User extends UserData implements Comparable<User>, IMessageRecipien
         }
         teleportRequestQueue.remove(playerUsername);
 
-        // Очищаем исходящий запрос у отправителя
         final User requester = ess.getUser(request.getRequesterUuid());
         if (requester != null) {
             requester.clearOutgoingTpaRequest();
@@ -501,7 +496,6 @@ public class User extends UserData implements Comparable<User>, IMessageRecipien
                 }
                 teleportRequestQueue.remove(key);
 
-                // Очищаем исходящий запрос у отправителя
                 final User requester = ess.getUser(request.getRequesterUuid());
                 if (requester != null) {
                     requester.clearOutgoingTpaRequest();

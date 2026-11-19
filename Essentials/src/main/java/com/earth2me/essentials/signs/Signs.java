@@ -13,7 +13,6 @@ public enum Signs {
     GRINDSTONE(new SignGrindstone()),
     HEAL(new SignHeal()),
     INFO(new SignInfo()),
-    KIT(new SignKit()),
     LOOM(new SignLoom()),
     MAIL(new SignMail()),
     PROTECTION(new SignProtection()),
@@ -25,8 +24,7 @@ public enum Signs {
     TRADE(new SignTrade()),
     WARP(new SignWarp()),
     WEATHER(new SignWeather()),
-    WORKBENCH(new SignWorkbench()),
-    RANDOMTELEPORT(new SignRandomTeleport());
+    WORKBENCH(new SignWorkbench());
     private final EssentialsSign sign;
 
     Signs(final EssentialsSign sign) {

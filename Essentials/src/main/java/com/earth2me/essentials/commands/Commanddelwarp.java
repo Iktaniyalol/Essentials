@@ -30,12 +30,12 @@ public class Commanddelwarp extends EssentialsCommand {
                 final Collection<String> warps = ess.getWarps().getList();
                 final List<String> playerWarps = new ArrayList<>();
                 for (String warp : warps) {
-                    if (ess.getWarps().getLastOwner(warp).equals(user.getUUID())) {
+                    if (user.getUUID().equals(ess.getWarps().getLastOwner(warp))) {
                         playerWarps.add(warp);
                     }
                 }
                 if (!playerWarps.contains(args[0])) {
-                    throw new TranslatableException("warpNotExist");
+                    throw new TranslatableException("warpNotOwned");
                 }
             }
             Location location;

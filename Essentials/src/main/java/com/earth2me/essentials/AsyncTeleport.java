@@ -191,33 +191,40 @@ public class AsyncTeleport implements IAsyncTeleport {
                 if (ess.getSettings().isTeleportSafetyEnabled()) {
                     if (ess.getSettings().isForceDisableTeleportSafety()) {
                         //The chunk we're teleporting to is 100% going to be loaded here, no need to teleport async.
-                        teleportee.getBase().teleport(loc, cause);
+                        future.complete(teleportee.getBase().teleport(loc, cause));
                     } else {
                         try {
                             //There's a chance the safer location is outside the loaded chunk so still teleport async here.
-                            PaperLib.teleportAsync(teleportee.getBase(), LocationUtil.getSafeDestination(ess, teleportee, loc), cause);
+                            PaperLib.teleportAsync(teleportee.getBase(), LocationUtil.getSafeDestination(ess, teleportee, loc), cause)
+                                .thenAccept(future::complete)
+                                .exceptionally(ex -> {
+                                    future.completeExceptionally(ex);
+                                    return null;
+                                });
                         } catch (final Exception e) {
                             future.completeExceptionally(e);
-                            return;
                         }
                     }
                 } else {
                     future.completeExceptionally(new TranslatableException("unsafeTeleportDestination", loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
-                    return;
                 }
             } else {
                 if (ess.getSettings().isForceDisableTeleportSafety()) {
                     //The chunk we're teleporting to is 100% going to be loaded here, no need to teleport async.
-                    teleportee.getBase().teleport(loc, cause);
+                    future.complete(teleportee.getBase().teleport(loc, cause));
                 } else {
                     if (ess.getSettings().isTeleportToCenterLocation()) {
                         loc = LocationUtil.getRoundedDestination(loc);
                     }
                     //There's a *small* chance the rounded destination produces a location outside the loaded chunk so still teleport async here.
-                    PaperLib.teleportAsync(teleportee.getBase(), loc, cause);
+                    PaperLib.teleportAsync(teleportee.getBase(), loc, cause)
+                        .thenAccept(future::complete)
+                        .exceptionally(ex -> {
+                            future.completeExceptionally(ex);
+                            return null;
+                        });
                 }
             }
-            future.complete(true);
         }).exceptionally(th -> {
             future.completeExceptionally(th);
             return null;
@@ -290,12 +297,18 @@ public class AsyncTeleport implements IAsyncTeleport {
             }
             nowAsync(teleportee, target, cause, future);
             if (cashCharge != null) {
-                cashCharge.charge(teleportOwner, future);
-                if (future.isCompletedExceptionally()) {
-                    return;
-                }
+                final Trade charge = cashCharge;
+                future.thenAccept(success -> {
+                    if (!success) {
+                        return;
+                    }
+                    try {
+                        charge.charge(teleportOwner);
+                    } catch (final ChargeException ex) {
+                        ess.showError(teleportOwner.getSource(), ex, "\\ teleport");
+                    }
+                });
             }
-            future.complete(true);
             return;
         }
 
@@ -343,12 +356,19 @@ public class AsyncTeleport implements IAsyncTeleport {
 
             nowAsync(teleportee, target, cause, future);
             if (teleporter != null && cashCharge != null) {
-                cashCharge.charge(teleporter, future);
-                if (future.isCompletedExceptionally()) {
-                    return;
-                }
+                final Trade charge = cashCharge;
+                final IUser payer = teleporter;
+                future.thenAccept(success -> {
+                    if (!success) {
+                        return;
+                    }
+                    try {
+                        charge.charge(payer);
+                    } catch (final ChargeException ex) {
+                        ess.showError(payer.getSource(), ex, "\\ teleport");
+                    }
+                });
             }
-            future.complete(true);
             return;
         }
 
@@ -383,9 +403,18 @@ public class AsyncTeleport implements IAsyncTeleport {
             }
             respawnNow(teleportOwner, cause, future);
             if (chargeFor != null) {
-                chargeFor.charge(teleportOwner, future);
+                final Trade charge = chargeFor;
+                future.thenAccept(success -> {
+                    if (!success) {
+                        return;
+                    }
+                    try {
+                        charge.charge(teleportOwner);
+                    } catch (final ChargeException ex) {
+                        ess.showError(teleportOwner.getSource(), ex, "\\ teleport");
+                    }
+                });
             }
-            future.complete(true);
             return;
         }
 

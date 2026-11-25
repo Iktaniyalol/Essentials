@@ -334,6 +334,7 @@ public class Trade {
                 return;
             }
             user.takeMoney(cost);
+            EconomyStatsHook.onCommandCost(user, command, cost);
         }
         if (getExperience() != null) {
             if (ess.getSettings().isDebug()) {

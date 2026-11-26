@@ -86,6 +86,47 @@ public final class EconomyStatsHook {
         }
     }
 
+    public static void onApiChange(final User user, final double before, final double after, final String op) {
+        if (user == null) {
+            return;
+        }
+        double amount = after - before;
+        if (amount == 0) {
+            return;
+        }
+        Object a = api();
+        if (a == null) {
+            return;
+        }
+        try {
+            UUID uuid = user.getBase().getUniqueId();
+            String meta = "{\"op\":\"" + op + "\",\"caller\":\"" + resolveCaller() + "\"}";
+            a.getClass().getMethod("recordStr", String.class, UUID.class, double.class, boolean.class,
+                    double.class, double.class, String.class, String.class, String.class, String.class)
+              .invoke(a, "Essentials", uuid, amount, amount > 0, before, after, "UNKNOWN", "api-economy", op, meta);
+        } catch (Throwable ignored) {
+        }
+    }
+
+    private static String resolveCaller() {
+        StackTraceElement[] st = Thread.currentThread().getStackTrace();
+        for (int i = 2; i < st.length; i++) {
+            String cls = st[i].getClassName();
+            if (cls.startsWith("com.earth2me.essentials")
+                    || cls.startsWith("net.ess3")
+                    || cls.startsWith("ru.minecraft.javaEconomyStats")
+                    || cls.startsWith("java.")
+                    || cls.startsWith("jdk.")
+                    || cls.startsWith("sun.")
+                    || cls.startsWith("org.bukkit")
+                    || cls.startsWith("io.papermc")) {
+                continue;
+            }
+            return cls;
+        }
+        return "unknown";
+    }
+
     private static void record(final UUID target, final double amount, final boolean deposit, final double before,
                                final double after, final String type, final String category, final String reason,
                                final String by) {

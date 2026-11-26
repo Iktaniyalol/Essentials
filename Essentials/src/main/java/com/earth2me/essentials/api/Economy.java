@@ -18,6 +18,7 @@ import java.math.MathContext;
 import java.text.MessageFormat;
 import java.util.UUID;
 import java.util.logging.Level;
+import com.earth2me.essentials.EconomyStatsHook;
 
 /**
  * You should use Vault instead of directly using this class.
@@ -250,8 +251,10 @@ public class Economy {
         if (balance.signum() < 0 && !user.isAuthorized("essentials.eco.loan")) {
             throw new NoLoanPermittedException();
         }
+        final double before = getMoneyExact(user).doubleValue();
         user.setMoney(balance, UserBalanceUpdateEvent.Cause.API);
         Trade.log("API", "Set", "API", user.getName(), new Trade(balance, ess), null, null, null, balance, ess);
+        EconomyStatsHook.onApiChange(user, before, balance.doubleValue(), "set");
     }
 
     /**
@@ -328,7 +331,9 @@ public class Economy {
         if (amount.signum() <= 0) {
             setMoney(user, result);
         } else {
+            final double before = getMoneyExact(user).doubleValue();
             user.setMoney(result, UserBalanceUpdateEvent.Cause.API);
+            EconomyStatsHook.onApiChange(user, before, result.doubleValue(), "add");
         }
         Trade.log("API", "Add", "API", user.getName(), new Trade(amount, ess), null, null, null, result, ess);
     }

@@ -99,11 +99,15 @@ public final class EconomyStatsHook {
             return;
         }
         try {
+            Boolean wrapped = (Boolean) a.getClass().getMethod("isVaultIngress").invoke(null);
+            if (Boolean.TRUE.equals(wrapped)) {
+                return;
+            }
             UUID uuid = user.getBase().getUniqueId();
             String meta = "{\"op\":\"" + op + "\",\"caller\":\"" + resolveCaller() + "\"}";
             a.getClass().getMethod("recordStr", String.class, UUID.class, double.class, boolean.class,
                     double.class, double.class, String.class, String.class, String.class, String.class)
-              .invoke(a, "Essentials", uuid, amount, amount > 0, before, after, "UNKNOWN", "api-economy", op, meta);
+              .invoke(a, "Essentials", uuid, Math.abs(amount), amount > 0, before, after, "UNKNOWN", "api-economy", op, meta);
         } catch (Throwable ignored) {
         }
     }

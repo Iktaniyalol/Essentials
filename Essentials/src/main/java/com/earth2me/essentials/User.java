@@ -312,8 +312,11 @@ public class User extends UserData implements Comparable<User>, IMessageRecipien
             }
             value = preTransactionEvent.getAmount();
 
+            double before = getMoney().doubleValue();
             setMoney(getMoney().subtract(value), cause);
             reciever.setMoney(reciever.getMoney().add(value), cause);
+            EconomyStatsHook.onPay(getBase().getUniqueId(), reciever.getBase().getUniqueId(), value.doubleValue(),
+                    before, getMoney().doubleValue(), getName(), reciever.getName());
             sendTl("moneySentTo", AdventureUtil.parsed(NumberUtil.displayCurrency(value, ess)), reciever.getDisplayName());
             reciever.sendTl("moneyRecievedFrom", AdventureUtil.parsed(NumberUtil.displayCurrency(value, ess)), getDisplayName());
             final TransactionEvent transactionEvent = new TransactionEvent(this.getSource(), reciever, value);

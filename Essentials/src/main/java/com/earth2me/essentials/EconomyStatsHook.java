@@ -51,4 +51,54 @@ public final class EconomyStatsHook {
         } catch (Throwable ignored) {
         }
     }
+
+    public static void onEcoGive(final UUID target, final double amount, final double before, final double after, final String by) {
+        record(target, amount, true, before, after, "SOURCE", "eco-admin", "eco-give", by);
+    }
+
+    public static void onEcoTake(final UUID target, final double amount, final double before, final double after, final String by) {
+        record(target, amount, false, before, after, "SINK", "eco-admin", "eco-take", by);
+    }
+
+    public static void onEcoSet(final UUID target, final double delta, final double before, final double after, final String by) {
+        if (delta == 0) {
+            return;
+        }
+        record(target, delta > 0 ? delta : -delta, delta > 0, before, after,
+                delta > 0 ? "SOURCE" : "SINK", "eco-admin", "eco-set", by);
+    }
+
+    public static void onPay(final UUID from, final UUID to, final double amount, final double before, final double after,
+                             final String fromName, final String toName) {
+        if (amount <= 0) {
+            return;
+        }
+        Object a = api();
+        if (a == null) {
+            return;
+        }
+        try {
+            String meta = "{\"from\":\"" + fromName + "\",\"to\":\"" + toName + "\"}";
+            a.getClass().getMethod("recordTransferStr", String.class, UUID.class, UUID.class, double.class,
+                    double.class, double.class, String.class, String.class, String.class, String.class)
+              .invoke(a, "Essentials", from, to, amount, before, after, "TRANSFER", "pay", "pay", meta);
+        } catch (Throwable ignored) {
+        }
+    }
+
+    private static void record(final UUID target, final double amount, final boolean deposit, final double before,
+                               final double after, final String type, final String category, final String reason,
+                               final String by) {
+        Object a = api();
+        if (a == null) {
+            return;
+        }
+        try {
+            String meta = "{\"by\":\"" + by + "\"}";
+            a.getClass().getMethod("recordStr", String.class, UUID.class, double.class, boolean.class,
+                    double.class, double.class, String.class, String.class, String.class, String.class)
+              .invoke(a, "Essentials", target, amount, deposit, before, after, type, category, reason, meta);
+        } catch (Throwable ignored) {
+        }
+    }
 }

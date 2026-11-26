@@ -2,6 +2,7 @@ package com.earth2me.essentials.commands;
 
 import com.earth2me.essentials.ChargeException;
 import com.earth2me.essentials.CommandSource;
+import com.earth2me.essentials.EconomyStatsHook;
 import com.earth2me.essentials.User;
 import com.earth2me.essentials.adventure.AdventureUtil;
 import com.earth2me.essentials.utils.NumberUtil;
@@ -55,12 +56,18 @@ public class Commandeco extends EssentialsLoopCommand {
 
             switch (cmd) {
                 case GIVE: {
+                    double before = player.getMoney().doubleValue();
                     player.giveMoney(userAmount, sender, UserBalanceUpdateEvent.Cause.COMMAND_ECO);
+                    EconomyStatsHook.onEcoGive(player.getBase().getUniqueId(), userAmount.doubleValue(), before,
+                            player.getMoney().doubleValue(), nameOf(sender));
                     break;
                 }
                 case TAKE: {
                     if (player.getMoney().subtract(userAmount).compareTo(ess.getSettings().getMinMoney()) >= 0) {
+                        double before = player.getMoney().doubleValue();
                         player.takeMoney(userAmount, sender, UserBalanceUpdateEvent.Cause.COMMAND_ECO);
+                        EconomyStatsHook.onEcoTake(player.getBase().getUniqueId(), userAmount.doubleValue(), before,
+                                player.getMoney().doubleValue(), nameOf(sender));
                     } else {
                         ess.showError(sender, new TranslatableException("minimumBalanceError", AdventureUtil.parsed(NumberUtil.displayCurrency(ess.getSettings().getMinMoney(), ess))), commandLabel);
                     }
@@ -72,7 +79,11 @@ public class Commandeco extends EssentialsLoopCommand {
                     final BigDecimal maxBal = ess.getSettings().getMaxMoney();
                     final boolean underMin = userAmount.compareTo(minBal) < 0;
                     final boolean aboveMax = userAmount.compareTo(maxBal) > 0;
-                    player.setMoney(underMin ? minBal : aboveMax ? maxBal : userAmount, UserBalanceUpdateEvent.Cause.COMMAND_ECO);
+                    final BigDecimal newBal = underMin ? minBal : aboveMax ? maxBal : userAmount;
+                    double before = player.getMoney().doubleValue();
+                    player.setMoney(newBal, UserBalanceUpdateEvent.Cause.COMMAND_ECO);
+                    EconomyStatsHook.onEcoSet(player.getBase().getUniqueId(), player.getMoney().doubleValue() - before,
+                            before, player.getMoney().doubleValue(), nameOf(sender));
                     player.sendTl("setBal", AdventureUtil.parsed(NumberUtil.displayCurrency(player.getMoney(), ess)));
                     sender.sendTl("setBalOthers", player.getDisplayName(), AdventureUtil.parsed(NumberUtil.displayCurrency(player.getMoney(), ess)));
                     break;
@@ -84,6 +95,10 @@ public class Commandeco extends EssentialsLoopCommand {
     @Override
     protected void updatePlayer(final Server server, final CommandSource sender, final User user, final String[] args) throws NotEnoughArgumentsException, PlayerExemptException, ChargeException, MaxMoneyException {
 
+    }
+
+    private static String nameOf(final CommandSource sender) {
+        return sender.isPlayer() ? sender.getPlayer().getName() : "CONSOLE";
     }
 
     @Override

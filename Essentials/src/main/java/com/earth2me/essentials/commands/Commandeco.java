@@ -59,7 +59,7 @@ public class Commandeco extends EssentialsLoopCommand {
                     double before = player.getMoney().doubleValue();
                     player.giveMoney(userAmount, sender, UserBalanceUpdateEvent.Cause.COMMAND_ECO);
                     EconomyStatsHook.onEcoGive(player.getBase().getUniqueId(), userAmount.doubleValue(), before,
-                            player.getMoney().doubleValue(), nameOf(sender));
+                            player.getMoney().doubleValue(), nameOf(sender), sender instanceof org.bukkit.entity.Player);
                     break;
                 }
                 case TAKE: {
@@ -67,7 +67,7 @@ public class Commandeco extends EssentialsLoopCommand {
                         double before = player.getMoney().doubleValue();
                         player.takeMoney(userAmount, sender, UserBalanceUpdateEvent.Cause.COMMAND_ECO);
                         EconomyStatsHook.onEcoTake(player.getBase().getUniqueId(), userAmount.doubleValue(), before,
-                                player.getMoney().doubleValue(), nameOf(sender));
+                                player.getMoney().doubleValue(), nameOf(sender), sender instanceof org.bukkit.entity.Player);
                     } else {
                         ess.showError(sender, new TranslatableException("minimumBalanceError", AdventureUtil.parsed(NumberUtil.displayCurrency(ess.getSettings().getMinMoney(), ess))), commandLabel);
                     }
@@ -83,7 +83,7 @@ public class Commandeco extends EssentialsLoopCommand {
                     double before = player.getMoney().doubleValue();
                     player.setMoney(newBal, UserBalanceUpdateEvent.Cause.COMMAND_ECO);
                     EconomyStatsHook.onEcoSet(player.getBase().getUniqueId(), player.getMoney().doubleValue() - before,
-                            before, player.getMoney().doubleValue(), nameOf(sender));
+                            before, player.getMoney().doubleValue(), nameOf(sender), sender instanceof org.bukkit.entity.Player);
                     player.sendTl("setBal", AdventureUtil.parsed(NumberUtil.displayCurrency(player.getMoney(), ess)));
                     sender.sendTl("setBalOthers", player.getDisplayName(), AdventureUtil.parsed(NumberUtil.displayCurrency(player.getMoney(), ess)));
                     break;

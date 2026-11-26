@@ -52,20 +52,37 @@ public final class EconomyStatsHook {
         }
     }
 
-    public static void onEcoGive(final UUID target, final double amount, final double before, final double after, final String by) {
-        record(target, amount, true, before, after, "SOURCE", "eco-admin", "eco-give", by);
+    public static void onEcoGive(final UUID target, final double amount, final double before, final double after,
+                                 final String by, final boolean senderIsPlayer) {
+        String source = ecoSource(senderIsPlayer);
+        record(target, amount, true, before, after,
+                source == null ? "ADMIN" : "SOURCE", source == null ? "eco-admin" : "eco-auto", "eco-give", by, source);
     }
 
-    public static void onEcoTake(final UUID target, final double amount, final double before, final double after, final String by) {
-        record(target, amount, false, before, after, "SINK", "eco-admin", "eco-take", by);
+    public static void onEcoTake(final UUID target, final double amount, final double before, final double after,
+                                 final String by, final boolean senderIsPlayer) {
+        String source = ecoSource(senderIsPlayer);
+        record(target, amount, false, before, after,
+                source == null ? "ADMIN" : "SINK", source == null ? "eco-admin" : "eco-auto", "eco-take", by, source);
     }
 
-    public static void onEcoSet(final UUID target, final double delta, final double before, final double after, final String by) {
+    public static void onEcoSet(final UUID target, final double delta, final double before, final double after,
+                                final String by, final boolean senderIsPlayer) {
         if (delta == 0) {
             return;
         }
+        String source = ecoSource(senderIsPlayer);
         record(target, delta > 0 ? delta : -delta, delta > 0, before, after,
-                delta > 0 ? "SOURCE" : "SINK", "eco-admin", "eco-set", by);
+                source == null ? "ADMIN" : (delta > 0 ? "SOURCE" : "SINK"),
+                source == null ? "eco-admin" : "eco-auto", "eco-set", by, source);
+    }
+
+    private static String ecoSource(final boolean senderIsPlayer) {
+        String caller = resolveCaller();
+        if (!caller.isEmpty() && !caller.equals("unknown")) {
+            return caller;
+        }
+        return senderIsPlayer ? null : "console";
     }
 
     public static void onPay(final UUID from, final UUID to, final double amount, final double before, final double after,
@@ -128,18 +145,26 @@ public final class EconomyStatsHook {
             }
             return cls;
         }
-        return "unknown";
+        return "";
     }
 
     private static void record(final UUID target, final double amount, final boolean deposit, final double before,
                                final double after, final String type, final String category, final String reason,
                                final String by) {
+        record(target, amount, deposit, before, after, type, category, reason, by, null);
+    }
+
+    private static void record(final UUID target, final double amount, final boolean deposit, final double before,
+                               final double after, final String type, final String category, final String reason,
+                               final String by, final String source) {
         Object a = api();
         if (a == null) {
             return;
         }
         try {
-            String meta = "{\"by\":\"" + by + "\"}";
+            String meta = source == null
+                    ? "{\"by\":\"" + by + "\"}"
+                    : "{\"by\":\"" + by + "\",\"source\":\"" + source + "\"}";
             a.getClass().getMethod("recordStr", String.class, UUID.class, double.class, boolean.class,
                     double.class, double.class, String.class, String.class, String.class, String.class)
               .invoke(a, "Essentials", target, amount, deposit, before, after, type, category, reason, meta);

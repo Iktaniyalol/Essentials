@@ -21,7 +21,7 @@ public final class EconomyStatsHook {
             try {
                 Plugin jes = Bukkit.getPluginManager().getPlugin("JavaEconomyStats");
                 if (jes != null) {
-                    Class<?> c = jes.getClass().getClassLoader().loadClass("ru.fornetmc.javaeconomystats.api.PublicApi");
+                    Class<?> c = jes.getClass().getClassLoader().loadClass("ru.minecraft.javaEconomyStats.api.PublicApi");
                     api = c.getMethod("get").invoke(null);
                 }
             } catch (Throwable t) {
